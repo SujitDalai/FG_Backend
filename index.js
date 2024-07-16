@@ -23,7 +23,7 @@ require('dotenv').config();
 require('./db')
 
 app.use(bodyParser.json());
-const allowedOrigins = ['http://localhost:3000']; // Add more origins as needed
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001']; // Add more origins as needed
 
 app.use(
     cors({

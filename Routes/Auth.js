@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../Models/UserSchema')
+const User = require('../Models/UserSchema');
 const errorHandler = require('../Middlewares/errorMiddleware');
 const authTokenHandler = require('../Middlewares/checkAuthToken');
 const jwt = require('jsonwebtoken');
@@ -13,13 +13,13 @@ const transporter = nodemailer.createTransport({
         user: 'sujitgudu78@gmail.com',
         pass: 'duuyvpsfcasslxbw'
     }
-})
+});
 
 router.get('/test', async (req, res) => {
     res.json({
-        message: "Auth api is working"
-    })
-})
+        message: "Auth API is working"
+    });
+});
 
 function createResponse(ok, message, data) {
     return {
@@ -65,11 +65,11 @@ router.post('/register', async (req, res, next) => {
 
         res.status(201).json(createResponse(true, 'User registered successfully'));
 
-    }
-    catch (err) {
+    } catch (err) {
         next(err);
     }
-})
+});
+
 router.post('/login', async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -91,11 +91,11 @@ router.post('/login', async (req, res, next) => {
             authToken,
             refreshToken
         }));
-    }
-    catch (err) {
+    } catch (err) {
         next(err);
     }
-})
+});
+
 router.post('/sendotp', async (req, res) => {
     try {
         const { email } = req.body;
@@ -106,7 +106,7 @@ router.post('/sendotp', async (req, res) => {
             to: email,
             subject: 'OTP for verification',
             text: `Your OTP is ${otp}`
-        }
+        };
 
         transporter.sendMail(mailOptions, async (err, info) => {
             if (err) {
@@ -116,17 +116,25 @@ router.post('/sendotp', async (req, res) => {
                 res.json(createResponse(true, 'OTP sent successfully', { otp }));
             }
         });
-    }
-    catch (err) {
+    } catch (err) {
         next(err);
     }
-})
+});
+
 router.post('/checklogin', authTokenHandler, async (req, res, next) => {
     res.json({
         ok: true,
         message: 'User authenticated successfully'
-    })
-})
-router.use(errorHandler)
+    });
+});
+
+// Add the logout route
+router.post('/logout', (req, res) => {
+    res.clearCookie('authToken'); // Clear the authToken cookie
+    res.clearCookie('refreshToken'); // Clear the refreshToken cookie
+    res.json(createResponse(true, 'Logout successful'));
+});
+
+router.use(errorHandler);
 
 module.exports = router;
